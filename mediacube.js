@@ -46,18 +46,18 @@ $(function(){
 
 		scene = new THREE.Scene();
 
+		// overdraw needed here otherwise seams are drawn on top of textures
 		var materials = [
-			new THREE.MeshBasicMaterial({	overdraw:0.5,wireframe:false, ambient: 0xffffff,map: textures[0] }),
-			new THREE.MeshBasicMaterial({	overdraw:0.5,wireframe:false,ambient: 0xffffff,map: textures[1] }),
-			new THREE.MeshBasicMaterial({	overdraw:0.5,wireframe:false, ambient: 0xffffff,map: textures[2] }),
-			new THREE.MeshBasicMaterial({	overdraw:0.5,wireframe:false,ambient: 0xffffff,map: textures[3] }),
-			new THREE.MeshBasicMaterial({	overdraw:0.5,wireframe:false, ambient: 0xffffff,map: textures[4] }),
-			new THREE.MeshBasicMaterial({	overdraw:0.5,wireframe:false,ambient: 0xffffff,map: textures[5] })
+			new THREE.MeshBasicMaterial({overdraw:0.5,wireframe:false,ambient:0xffffff,map:textures[0]}),
+			new THREE.MeshBasicMaterial({overdraw:0.5,wireframe:false,ambient:0xffffff,map:textures[1]}),
+			new THREE.MeshBasicMaterial({overdraw:0.5,wireframe:false,ambient:0xffffff,map:textures[2]}),
+			new THREE.MeshBasicMaterial({overdraw:0.5,wireframe:false,ambient:0xffffff,map:textures[3]}),
+			new THREE.MeshBasicMaterial({overdraw:0.5,wireframe:false,ambient:0xffffff,map:textures[4]}),
+			new THREE.MeshBasicMaterial({overdraw:0.5,wireframe:false,ambient:0xffffff,map:textures[5]})
 		];
 
-		cube = new THREE.Mesh(
-			new THREE.CubeGeometry(256,256,256,4,4,4),
-			new THREE.MeshFaceMaterial( materials ) );
+		// segments affect how well texture is mapped but affects the performace considerably
+		cube = new THREE.Mesh(new THREE.CubeGeometry(256,256,256,4,4,4),new THREE.MeshFaceMaterial(materials) );
 		cube.dynamic = true;
 		cube.position.y = 150;
 		scene.add( cube );
@@ -65,6 +65,8 @@ $(function(){
 
 		renderer = new THREE.CanvasRenderer();
 		renderer.setSize( window.innerWidth, window.innerHeight );
+
+		// background color
 		renderer.setClearColor(0);
 		container.appendChild( renderer.domElement );
 
