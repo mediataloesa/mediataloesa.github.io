@@ -2,7 +2,7 @@ $(function(){
 
 	var textures;
 	//$.getJSON('http://www2.ess.fi/cube/ad.js',function(d){
-		THREE.ImageUtils.loadTexture( 'crate.gif',undefined,function(t1){
+		THREE.ImageUtils.loadTexture('http://cdn3.emediate.eu/media/33/2127/193012/Kylpyla-468x400_2.jpg',undefined,function(t1){
 			THREE.ImageUtils.loadTexture( 'http://cdn3.emediate.eu/media/113/23081/170761/130900-RV-HT-468x400.jpg',undefined,function(t2){
 				THREE.ImageUtils.loadTexture( 'http://cdn3.emediate.eu/media/33/2127/193012/0202-Lahti-468x400.jpg',undefined,function(t3){
 
