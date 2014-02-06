@@ -58,7 +58,7 @@ $(function(){
 		];
 
 		// segments affect how well texture is mapped but affects the performace considerably
-		cube = new THREE.Mesh(new THREE.CubeGeometry(256,256,256,4,4,4),new THREE.MeshFaceMaterial(materials) );
+		cube = new THREE.Mesh(new THREE.CubeGeometry(256,256,256,2,2,2),new THREE.MeshFaceMaterial(materials) );
 		cube.dynamic = true;
 		cube.position.y = 150;
 		scene.add( cube );
