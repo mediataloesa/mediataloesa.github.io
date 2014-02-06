@@ -26,6 +26,7 @@ $(function(){
 		});
 	//});
 
+	var mouseVector = new THREE.Vector3();
 	var container;
 	var camera, scene, renderer;
 	var cube;
@@ -90,8 +91,20 @@ $(function(){
 
 
 
-	function onDocumentMouseDown( event ) {
+	function onDocumentMouseDown( e ) {
 		event.preventDefault();
+
+		var projector = new THREE.Projector();
+		mouseVector.x = 2 * (e.clientX / window.innerWidth) - 1;
+		mouseVector.y = 1 - 2 * ( e.clientY / window.innerHeight );
+
+		var raycaster = projector.pickingRay( mouseVector.clone(), camera ),
+			a = raycaster.intersectObjects( scene.children );
+
+		if (a.length > 0) {
+			console.log(a[0].object.id + ', '+a[0].faceIndex+', '+a[0].face.materialIndex);
+
+		}
 		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 		document.addEventListener( 'mouseup', onDocumentMouseUp, false );
 		document.addEventListener( 'mouseout', onDocumentMouseOut, false );
