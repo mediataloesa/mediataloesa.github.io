@@ -1,3 +1,5 @@
+
+
 $(function(){
 
 	var textures;
@@ -92,7 +94,7 @@ $(function(){
 
 
 	function onDocumentMouseDown( e ) {
-		event.preventDefault();
+		e.preventDefault();
 
 		var projector = new THREE.Projector();
 		mouseVector.x = 2 * (e.clientX / window.innerWidth) - 1;
@@ -108,7 +110,7 @@ $(function(){
 		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 		document.addEventListener( 'mouseup', onDocumentMouseUp, false );
 		document.addEventListener( 'mouseout', onDocumentMouseOut, false );
-		mouseXOnMouseDown = event.clientX - windowHalfX;
+		mouseXOnMouseDown = e.clientX - windowHalfX;
 		targetRotationOnMouseDown = targetRotation;
 	}
 
