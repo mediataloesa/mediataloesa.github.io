@@ -1,0 +1,37 @@
+[fields]
+name	-	Name of creative	string
+userfile0	-	Upload image1 here 	upload
+userfile1	-	Upload image2 here 	upload
+userfile2	-	Upload image3 here 	upload
+userfile3	-	Upload image4 here 	upload
+gif0	-	...or specify a GIF url 	url
+gif1	-	...or specify a GIF url 	url
+gif2	-	...or specify a GIF url 	url
+gif3	-	...or specify a GIF url 	url
+targ	-	Link target 	choice	_blank	_parent	_top
+link	-	Click URL 	url
+
+[required]
+
+[rules]
+
+if (def gif0) img_src0 = EASName{gif0}
+if (def userfile0) img_src0=EASName{path}EASName{userfile0}
+if (def gif1) img_src1 = EASName{gif1}
+if (def userfile1) img_src1=EASName{path}EASName{userfile1}
+if (def gif2) img_src2 = EASName{gif2}
+if (def userfile2) img_src2=EASName{path}EASName{userfile2}
+if (def gif3) img_src3 = EASName{gif3}
+if (def userfile3) img_src3=EASName{path}EASName{userfile3}
+
+[output]
+if ("EASName{img_src0}" != ""){
+	var cubeImages = [];
+	if ("EASName{img_src0}" != "") { images.push("EASName{img_src0}"); }
+	if ("EASName{img_src1}" != "") { images.push("EASName{img_src1}"); }
+	if ("EASName{img_src2}" != "") { images.push("EASName{img_src2}"); }
+	if ("EASName{img_src3}" != "") { images.push("EASName{img_src3}"); }
+}
+var link = "EASName{clickcount}EASName{link}";
+
+
