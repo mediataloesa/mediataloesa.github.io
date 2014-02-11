@@ -35,7 +35,7 @@ $(function(){
 	var targetRotation = 0;
 	var targetRotationOnMouseDown = 0;
 	var mouseX = 0;
-	var mouseXOnMouseDown = 0;
+	var mouseXOnMouseDown = 0,mouseYOnMouseDown = 0;
 	var windowHalfX = window.innerWidth / 2;
 	var windowHalfY = window.innerHeight / 2;
 
@@ -72,15 +72,15 @@ $(function(){
 		// background color
 		renderer.setClearColor(0);
 		container.appendChild( renderer.domElement );
+		//_.each(textures,function(t) { t.anisotropy = renderer.getMaxAnisotropy();});
+		window.addEventListener( 'resize', onWindowResize, false );
+	}
 
+	var roundTripDone = false;
+	function initEvents() {
 		document.addEventListener( 'mousedown', onDocumentMouseDown, false );
 		document.addEventListener( 'touchstart', onDocumentTouchStart, false );
 		document.addEventListener( 'touchmove', onDocumentTouchMove, false );
-
-		//_.each(textures,function(t) { t.anisotropy = renderer.getMaxAnisotropy();});
-
-		window.addEventListener( 'resize', onWindowResize, false );
-
 	}
 
 	function onWindowResize() {
@@ -91,35 +91,19 @@ $(function(){
 		renderer.setSize( window.innerWidth, window.innerHeight );
 	}
 
-
-
-	function onDocumentMouseDown( e ) {
-		e.preventDefault();
-
-		var projector = new THREE.Projector();
-		mouseVector.x = 2 * (e.clientX / window.innerWidth) - 1;
-		mouseVector.y = 1 - 2 * ( e.clientY / window.innerHeight );
-
-		var raycaster = projector.pickingRay( mouseVector.clone(), camera ),
-			a = raycaster.intersectObjects( scene.children );
-
-		if (a.length > 0) {
-			console.log(a[0].object.id + ', '+a[0].faceIndex+', '+a[0].face.materialIndex);
-
+	function onDocumentMouseUp(e) {
+		var mx = e.clientX - windowHalfX
+			,my = e.clientY - windowHalfY;
+		if( Math.sqrt(Math.pow(mouseXOnMouseDown-mx,2) +Math.pow(mouseYOnMouseDown-my,2)) < 2 ) {
+			var projector = new THREE.Projector();
+			mouseVector.x = 2 * (e.clientX / window.innerWidth) - 1;
+			mouseVector.y = 1 - 2 * ( e.clientY / window.innerHeight );
+			var raycaster = projector.pickingRay( mouseVector.clone(), camera ),
+				a = raycaster.intersectObjects( scene.children );
+			if (a.length > 0) {
+				console.log(a[0].object.id + ', '+a[0].faceIndex+', '+a[0].face.materialIndex);
+			}
 		}
-		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-		document.addEventListener( 'mouseup', onDocumentMouseUp, false );
-		document.addEventListener( 'mouseout', onDocumentMouseOut, false );
-		mouseXOnMouseDown = e.clientX - windowHalfX;
-		targetRotationOnMouseDown = targetRotation;
-	}
-
-	function onDocumentMouseMove( event ) {
-		mouseX = event.clientX - windowHalfX;
-		targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.02;
-	}
-
-	function onDocumentMouseUp( event ) {
 		document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
 		document.removeEventListener( 'mouseup', onDocumentMouseUp, false );
 		document.removeEventListener( 'mouseout', onDocumentMouseOut, false );
@@ -131,10 +115,20 @@ $(function(){
 		document.removeEventListener( 'mouseout', onDocumentMouseOut, false );
 	}
 
+	function onDocumentMouseDown( e ) {
+		e.preventDefault();
+		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+		document.addEventListener( 'mouseup', onDocumentMouseUp, false );
+		document.addEventListener( 'mouseout', onDocumentMouseOut, false );
+		mouseXOnMouseDown = e.clientX - windowHalfX;
+		mouseYOnMouseDown = e.clientY - windowHalfY;
+		targetRotationOnMouseDown = targetRotation;
+	}
 	function onDocumentTouchStart( event ) {
 		if ( event.touches.length === 1 ) {
 			event.preventDefault();
 			mouseXOnMouseDown = event.touches[ 0 ].pageX - windowHalfX;
+			mouseYOnMouseDown = event.touches[ 0 ].pageY - windowHalfY;
 			targetRotationOnMouseDown = targetRotation;
 		}
 	}
@@ -146,6 +140,10 @@ $(function(){
 			targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.05;
 		}
 	}
+	function onDocumentMouseMove( event ) {
+		mouseX = event.clientX - windowHalfX;
+		targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.02;
+	}
 
 	function animate() {
 		requestAnimationFrame( animate );
@@ -153,7 +151,16 @@ $(function(){
 	}
 
 	function render() {
-		cube.rotation.y += ( targetRotation - cube.rotation.y ) * 0.05;
+		if( roundTripDone )
+			cube.rotation.y += ( targetRotation - cube.rotation.y ) * 0.05;
+		else {
+			cube.rotation.y += 0.05;
+			if( cube.rotation.y >= (Math.PI*2) ) {
+				roundTripDone = true;
+				targetRotation = cube.rotation.y;
+				initEvents();
+			}
+		}
 		renderer.render( scene, camera );
 	}
 });
