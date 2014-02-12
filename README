@@ -2,7 +2,7 @@ To produce custom build three.js r65, do the following:
 
 1. git clone git@github.com:mrdoob/three.js.git
 
-2. edit three.js/build/canvas.json so that it contains the following lines
+2. edit three.js/utils/build/includes/canvas.json so that it contains the following lines
 
 [
 	"src/Three.js",
