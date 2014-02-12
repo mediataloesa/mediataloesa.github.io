@@ -75,5 +75,6 @@ To produce custom build three.js r65, do the following:
 	"src/extras/geometries/CubeGeometry.js"
 ]
 
-3. cd three.js/utils/build and run command "python build.py --include canvas --minify --output mycanvasbuild.min.js",
- for this you need to have python installed
+3. cd three.js/utils/build and run commands "python build.py --include canvas --minify --output threejs-r65-custom.min
+.js", and "python build.py --include canvas --output threejs-r65-custom.js", note that for these you need to have
+python installed
