@@ -71,6 +71,7 @@ $(function(){
 		// background color
 		renderer.setClearColor(0);
 		$container.append( renderer.domElement );
+		//$(renderer.domElement).css({"-ms-touch-action":"none"});
 		//_.each(textures,function(t) { t.anisotropy = renderer.getMaxAnisotropy();});
 		$(window).on('resize orientationchange',resize);
 		resize();
