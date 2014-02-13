@@ -1,12 +1,18 @@
-
-
 $(function(){
+
+	if( !window.mediacube )
+		return;
+
+	var $container = $('#mediacube');
+	if( !$container.length )
+		return;
+	var container = $container[0];
 
 	var textures;
 	//$.getJSON('http://www2.ess.fi/cube/ad.js',function(d){
-		THREE.ImageUtils.loadTexture('http://cdn3.emediate.eu/media/33/2127/193012/Kylpyla-468x400_2.jpg',undefined,function(t1){
-			THREE.ImageUtils.loadTexture( 'http://cdn3.emediate.eu/media/113/23081/170761/130900-RV-HT-468x400.jpg',undefined,function(t2){
-				THREE.ImageUtils.loadTexture( 'http://cdn3.emediate.eu/media/33/2127/193012/0202-Lahti-468x400.jpg',undefined,function(t3){
+		THREE.ImageUtils.loadTexture('http://placehold.it/300x300',undefined,function(t1){
+			THREE.ImageUtils.loadTexture( 'http://placehold.it/300x300',undefined,function(t2){
+				THREE.ImageUtils.loadTexture( 'http://placehold.it/300x300',undefined,function(t3){
 
 					// https://github.com/mrdoob/three.js/issues/1440
 					// https://github.com/mrdoob/three.js/issues/1200
@@ -20,7 +26,6 @@ $(function(){
 					setTimeout(function(){
 						init();
 						animate();
-
 					});
 				});
 
@@ -29,23 +34,19 @@ $(function(){
 	//});
 
 	var mouseVector = new THREE.Vector3();
-	var container;
 	var camera, scene, renderer;
 	var cube;
 	var targetRotation = 0;
 	var targetRotationOnMouseDown = 0;
 	var mouseX = 0;
 	var mouseXOnMouseDown = 0,mouseYOnMouseDown = 0;
-	var windowHalfX = window.innerWidth / 2;
-	var windowHalfY = window.innerHeight / 2;
+	var w = 300, h = 300;
 
 	function init() {
-		container = document.createElement( 'div' );
-		document.body.appendChild( container );
 
 		camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
 		camera.position.y = 150;
-		camera.position.z = 500;
+		camera.position.z = 400;
 
 		scene = new THREE.Scene();
 
@@ -60,75 +61,80 @@ $(function(){
 		];
 
 		// segments affect how well texture is mapped but affects the performace considerably
-		cube = new THREE.Mesh(new THREE.CubeGeometry(256,256,256,2,2,2),new THREE.MeshFaceMaterial(materials) );
+		cube = new THREE.Mesh(new THREE.CubeGeometry(300,300,300,2,2,2),new THREE.MeshFaceMaterial(materials) );
 		cube.dynamic = true;
 		cube.position.y = 150;
 		scene.add( cube );
 
-
 		renderer = new THREE.CanvasRenderer();
-		renderer.setSize( window.innerWidth, window.innerHeight );
 
 		// background color
 		renderer.setClearColor(0);
-		container.appendChild( renderer.domElement );
+		$container.append( renderer.domElement );
 		//_.each(textures,function(t) { t.anisotropy = renderer.getMaxAnisotropy();});
-		window.addEventListener( 'resize', onWindowResize, false );
+		$(window).on('resize orientationchange',resize);
+		resize();
 	}
 
 	var roundTripDone = false;
 	function initEvents() {
-		document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-		document.addEventListener( 'touchstart', onDocumentTouchStart, false );
-		document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+		renderer.domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
+		renderer.domElement.addEventListener( 'touchstart', onDocumentTouchStart, false );
+		renderer.domElement.addEventListener( 'touchmove', onDocumentTouchMove, false );
 	}
 
-	function onWindowResize() {
-		windowHalfX = window.innerWidth / 2;
-		windowHalfY = window.innerHeight / 2;
-		camera.aspect = window.innerWidth / window.innerHeight;
+	function resize() {
+		var cw = $container.width(),ch = $container.height();
+		if( cw < w ) {
+			w = h = cw;
+		} else w = h = 300;
+		$container.find('canvas').css({
+			"margin-top" : (parseInt(ch - h)/2) + "px",
+			"margin-left" : (parseInt(cw - h)/2) + "px"
+		});
+		camera.aspect = 1;
 		camera.updateProjectionMatrix();
-		renderer.setSize( window.innerWidth, window.innerHeight );
+		renderer.setSize( w, h );
 	}
 
 	function onDocumentMouseUp(e) {
-		var mx = e.clientX - windowHalfX
-			,my = e.clientY - windowHalfY;
+		var mx = e.clientX - 150
+			,my = e.clientY - 150;
 		if( Math.sqrt(Math.pow(mouseXOnMouseDown-mx,2) +Math.pow(mouseYOnMouseDown-my,2)) < 2 ) {
 			var projector = new THREE.Projector();
-			mouseVector.x = 2 * (e.clientX / window.innerWidth) - 1;
-			mouseVector.y = 1 - 2 * ( e.clientY / window.innerHeight );
+			mouseVector.x = 2 * (e.clientX / 300) - 1;
+			mouseVector.y = 1 - 2 * ( e.clientY / 300 );
 			var raycaster = projector.pickingRay( mouseVector.clone(), camera ),
 				a = raycaster.intersectObjects( scene.children );
 			if (a.length > 0) {
 				console.log(a[0].object.id + ', '+a[0].faceIndex+', '+a[0].face.materialIndex);
 			}
 		}
-		document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
-		document.removeEventListener( 'mouseup', onDocumentMouseUp, false );
-		document.removeEventListener( 'mouseout', onDocumentMouseOut, false );
+		renderer.domElement.removeEventListener( 'mousemove', onDocumentMouseMove, false );
+		renderer.domElement.removeEventListener( 'mouseup', onDocumentMouseUp, false );
+		renderer.domElement.removeEventListener( 'mouseout', onDocumentMouseOut, false );
 	}
 
 	function onDocumentMouseOut( event ) {
-		document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
-		document.removeEventListener( 'mouseup', onDocumentMouseUp, false );
-		document.removeEventListener( 'mouseout', onDocumentMouseOut, false );
+		renderer.domElement.removeEventListener( 'mousemove', onDocumentMouseMove, false );
+		renderer.domElement.removeEventListener( 'mouseup', onDocumentMouseUp, false );
+		renderer.domElement.removeEventListener( 'mouseout', onDocumentMouseOut, false );
 	}
 
 	function onDocumentMouseDown( e ) {
 		e.preventDefault();
-		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-		document.addEventListener( 'mouseup', onDocumentMouseUp, false );
-		document.addEventListener( 'mouseout', onDocumentMouseOut, false );
-		mouseXOnMouseDown = e.clientX - windowHalfX;
-		mouseYOnMouseDown = e.clientY - windowHalfY;
+		renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
+		renderer.domElement.addEventListener( 'mouseup', onDocumentMouseUp, false );
+		renderer.domElement.addEventListener( 'mouseout', onDocumentMouseOut, false );
+		mouseXOnMouseDown = e.clientX - 150;
+		mouseYOnMouseDown = e.clientY - 150;
 		targetRotationOnMouseDown = targetRotation;
 	}
 	function onDocumentTouchStart( event ) {
 		if ( event.touches.length === 1 ) {
 			event.preventDefault();
-			mouseXOnMouseDown = event.touches[ 0 ].pageX - windowHalfX;
-			mouseYOnMouseDown = event.touches[ 0 ].pageY - windowHalfY;
+			mouseXOnMouseDown = event.touches[ 0 ].pageX - 150;
+			mouseYOnMouseDown = event.touches[ 0 ].pageY - 150;
 			targetRotationOnMouseDown = targetRotation;
 		}
 	}
@@ -136,12 +142,12 @@ $(function(){
 	function onDocumentTouchMove( event ) {
 		if ( event.touches.length === 1 ) {
 			event.preventDefault();
-			mouseX = event.touches[ 0 ].pageX - windowHalfX;
+			mouseX = event.touches[ 0 ].pageX - 150;
 			targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.05;
 		}
 	}
 	function onDocumentMouseMove( event ) {
-		mouseX = event.clientX - windowHalfX;
+		mouseX = event.clientX - 150;
 		targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.02;
 	}
 
@@ -165,22 +171,3 @@ $(function(){
 	}
 });
 
-
-/*
- var ad = {
- link: "http://eas3.emediate.se/eas?camp=190431::cu=10499::no=334677::ty=ct::uuid=1d7755c2-8d7c-11e3-87d1-002590af902f::cman1=2137::cman2=2139::csit=111111111114111111",
- images: [{image: "http://cdn3.emediate.eu/media/33/2127/193012/Kylpyla-468x400_2.jpg"},
- {image: "http://cdn3.emediate.eu/media/113/23081/170761/130900-RV-HT-468x400.jpg"},
- {image: "http://cdn3.emediate.eu/media/33/2127/193012/0202-Lahti-468x400.jpg"}
- ]
- }
- var textures = [
- THREE.ImageUtils.loadTexture( '1.jpg' )
- ,THREE.ImageUtils.loadTexture( '2.jpg' )
- ,THREE.ImageUtils.loadTexture( '3.jpg' )
- ,THREE.ImageUtils.loadTexture( '1.jpg' )
- ,THREE.ImageUtils.loadTexture( '2.jpg' )
- ,THREE.ImageUtils.loadTexture( '3.jpg' )
- ];
- init();
- animate();*/
