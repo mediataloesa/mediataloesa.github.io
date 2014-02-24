@@ -10,28 +10,29 @@ $(function(){
 
 	var textures;
 	//$.getJSON('http://www2.ess.fi/cube/ad.js',function(d){
-		THREE.ImageUtils.loadTexture('http://placehold.it/300x300',undefined,function(t1){
-			THREE.ImageUtils.loadTexture( 'http://placehold.it/300x300',undefined,function(t2){
-				THREE.ImageUtils.loadTexture( 'http://placehold.it/300x300',undefined,function(t3){
+	THREE.ImageUtils.loadTexture(cubeImages[0],undefined,function(t1){
+		THREE.ImageUtils.loadTexture(cubeImages[1],undefined,function(t2){
+			THREE.ImageUtils.loadTexture(cubeImages[2],undefined,function(t3){
+				THREE.ImageUtils.loadTexture(cubeImages[3],undefined,function(t4){
 
 					// https://github.com/mrdoob/three.js/issues/1440
 					// https://github.com/mrdoob/three.js/issues/1200
 					// https://github.com/mrdoob/three.js/issues/1338
-					t1.wrapS = t2.wrapS = t3.wrapS = t1.wrapT = t2.wrapT = t3.wrapT= THREE.RepeatWrapping;
-					t1.repeat.set( 1, 1 );
-					t2.repeat.set( 1, 1 );
-					t3.repeat.set( 1, 1 );
+					t1.wrapS = t2.wrapS = t3.wrapS = t4.wrapS = t1.wrapT = t2.wrapT = t3.wrapT = t4.wrapT = THREE.RepeatWrapping;
+					t1.repeat.set(1,1);
+					t2.repeat.set(1,1);
+					t3.repeat.set(1,1);
+					t4.repeat.set(1,1);
 
-					textures = [t1,t2,t3,t1,t2,t3];
+					textures = [t1,t2,t3,t4,t4,t3];
 					setTimeout(function(){
 						init();
 						animate();
 					});
 				});
-
 			});
 		});
-	//});
+	});
 
 	var mouseVector = new THREE.Vector3();
 	var camera, scene, renderer;
@@ -52,16 +53,16 @@ $(function(){
 
 		// overdraw needed here otherwise seams are drawn on top of textures
 		var materials = [
-			new THREE.MeshBasicMaterial({overdraw:0.5,wireframe:false,ambient:0xffffff,map:textures[0]}),
-			new THREE.MeshBasicMaterial({overdraw:0.5,wireframe:false,ambient:0xffffff,map:textures[1]}),
-			new THREE.MeshBasicMaterial({overdraw:0.5,wireframe:false,ambient:0xffffff,map:textures[2]}),
-			new THREE.MeshBasicMaterial({overdraw:0.5,wireframe:false,ambient:0xffffff,map:textures[3]}),
-			new THREE.MeshBasicMaterial({overdraw:0.5,wireframe:false,ambient:0xffffff,map:textures[4]}),
-			new THREE.MeshBasicMaterial({overdraw:0.5,wireframe:false,ambient:0xffffff,map:textures[5]})
+			new THREE.MeshBasicMaterial({overdraw:1,wireframe:false,ambient:0xffffff,map:textures[0]}),
+			new THREE.MeshBasicMaterial({overdraw:1,wireframe:false,ambient:0xffffff,map:textures[1]}),
+			new THREE.MeshBasicMaterial({overdraw:1,wireframe:false,ambient:0xffffff,map:textures[2]}),
+			new THREE.MeshBasicMaterial({overdraw:1,wireframe:false,ambient:0xffffff,map:textures[3]}),
+			new THREE.MeshBasicMaterial({overdraw:1,wireframe:false,ambient:0xffffff,map:textures[4]}),
+			new THREE.MeshBasicMaterial({overdraw:1,wireframe:false,ambient:0xffffff,map:textures[5]})
 		];
 
 		// segments affect how well texture is mapped but affects the performace considerably
-		cube = new THREE.Mesh(new THREE.CubeGeometry(300,300,300,2,2,2),new THREE.MeshFaceMaterial(materials) );
+		cube = new THREE.Mesh(new THREE.CubeGeometry(300,300,300,4,4,4),new THREE.MeshFaceMaterial(materials) );
 		cube.dynamic = true;
 		cube.position.y = 150;
 		scene.add( cube );
@@ -74,14 +75,16 @@ $(function(){
 		//$(renderer.domElement).css({"-ms-touch-action":"none"});
 		//_.each(textures,function(t) { t.anisotropy = renderer.getMaxAnisotropy();});
 		$(window).on('resize orientationchange',resize);
+
 		resize();
 	}
 
 	var roundTripDone = false;
 	function initEvents() {
-		renderer.domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
-		renderer.domElement.addEventListener( 'touchstart', onDocumentTouchStart, false );
-		renderer.domElement.addEventListener( 'touchmove', onDocumentTouchMove, false );
+		renderer.domElement.addEventListener('pointerdown', pointerdown);
+		renderer.domElement.addEventListener('pointermove', pointermove);
+		renderer.domElement.addEventListener('pointerup', pointerup);
+		//renderer.domElement.addEventListener('pointercancel', pointerup);
 	}
 
 	function resize() {
@@ -98,57 +101,33 @@ $(function(){
 		renderer.setSize( w, h );
 	}
 
-	function onDocumentMouseUp(e) {
-		var mx = e.clientX - 150
-			,my = e.clientY - 150;
+	function pointerup(e) {
+		var mx = e.offsetX - 150
+			,my = e.offsetY - 150;
 		if( Math.sqrt(Math.pow(mouseXOnMouseDown-mx,2) +Math.pow(mouseYOnMouseDown-my,2)) < 2 ) {
 			var projector = new THREE.Projector();
-			mouseVector.x = 2 * (e.clientX / 300) - 1;
-			mouseVector.y = 1 - 2 * ( e.clientY / 300 );
+
+			// calculate normalized device coordinates
+			mouseVector.x = (mx/150);
+			mouseVector.y = (my/150);
+			//console.log('touch detected at '+mouseVector.x+','+mouseVector.y);
 			var raycaster = projector.pickingRay( mouseVector.clone(), camera ),
 				a = raycaster.intersectObjects( scene.children );
 			if (a.length > 0) {
 				console.log(a[0].object.id + ', '+a[0].faceIndex+', '+a[0].face.materialIndex);
 			}
 		}
-		renderer.domElement.removeEventListener( 'mousemove', onDocumentMouseMove, false );
-		renderer.domElement.removeEventListener( 'mouseup', onDocumentMouseUp, false );
-		renderer.domElement.removeEventListener( 'mouseout', onDocumentMouseOut, false );
 	}
 
-	function onDocumentMouseOut( event ) {
-		renderer.domElement.removeEventListener( 'mousemove', onDocumentMouseMove, false );
-		renderer.domElement.removeEventListener( 'mouseup', onDocumentMouseUp, false );
-		renderer.domElement.removeEventListener( 'mouseout', onDocumentMouseOut, false );
-	}
-
-	function onDocumentMouseDown( e ) {
+	function pointerdown( e ) {
 		e.preventDefault();
-		renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
-		renderer.domElement.addEventListener( 'mouseup', onDocumentMouseUp, false );
-		renderer.domElement.addEventListener( 'mouseout', onDocumentMouseOut, false );
-		mouseXOnMouseDown = e.clientX - 150;
-		mouseYOnMouseDown = e.clientY - 150;
+		mouseXOnMouseDown = e.offsetX - 150;
+		mouseYOnMouseDown = e.offsetY - 150;
 		targetRotationOnMouseDown = targetRotation;
 	}
-	function onDocumentTouchStart( event ) {
-		if ( event.touches.length === 1 ) {
-			event.preventDefault();
-			mouseXOnMouseDown = event.touches[ 0 ].pageX - 150;
-			mouseYOnMouseDown = event.touches[ 0 ].pageY - 150;
-			targetRotationOnMouseDown = targetRotation;
-		}
-	}
-
-	function onDocumentTouchMove( event ) {
-		if ( event.touches.length === 1 ) {
-			event.preventDefault();
-			mouseX = event.touches[ 0 ].pageX - 150;
-			targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.05;
-		}
-	}
-	function onDocumentMouseMove( event ) {
-		mouseX = event.clientX - 150;
+	function pointermove( e ) {
+		console.log(e.offsetX+','+e.offsetY);
+		mouseX = e.offsetX - 150;
 		targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.02;
 	}
 
