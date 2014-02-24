@@ -6,6 +6,20 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <script src="lib/typedarray.js"></script>
+    <script>
+        cubeImages = [];
+        if ("http://best-furs.com.ua/wp-content/uploads/2013/10/300x300.gif" != "") { cubeImages.push("http://best-furs.com.ua/wp-content/uploads/2013/10/300x300.gif"); }
+        if ("http://jeopardygirl.files.wordpress.com/2007/04/happy-face-happyface-smiley-300x300.gif" != "") { cubeImages.push("http://jeopardygirl.files.wordpress.com/2007/04/happy-face-happyface-smiley-300x300.gif"); } else { cubeImages.push("http://best-furs.com.ua/wp-content/uploads/2013/10/300x300.gif"); }
+        if ("https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcR0M2IRarsrptgAo_KDIr2hFXhtvOI8H9jo-Xfc9K1UOYiI-w4l" != "") { cubeImages.push("https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcR0M2IRarsrptgAo_KDIr2hFXhtvOI8H9jo-Xfc9K1UOYiI-w4l"); } else { cubeImages.push("http://best-furs.com.ua/wp-content/uploads/2013/10/300x300.gif"); }
+        if ("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyPMvL0t-Bz-sfDPFpe18xGPE1MYR5ZE_KitGbAkDb7M3_iBBz" != "") { cubeImages.push("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyPMvL0t-Bz-sfDPFpe18xGPE1MYR5ZE_KitGbAkDb7M3_iBBz"); } else { cubeImages.push("http://best-furs.com.ua/wp-content/uploads/2013/10/300x300.gif"); }
+
+        cubeLinks = [];
+        if ("http://www.ess.fi" != "") { cubeLinks.push("http://www.ess.fi"); }
+        if ("http://www.ess.fi/kotimaa" != "") { cubeLinks.push("http://www.ess.fi/kotimaa"); } else { cubeLinks.push("http://www.ess.fi"); }
+        if ("http://www.ess.fi/urheilu" != "") { cubeLinks.push("http://www.ess.fi/urheilu"); } else { cubeLinks.push("http://www.ess.fi"); }
+        if ("http://www.ess.fi/paijat_hame" != "") { cubeLinks.push("http://www.ess.fi/paijat_hame"); } else { cubeLinks.push("http://www.ess.fi"); }
+
+    </script>
     <style>
         html, body      {
             height: 100%;
@@ -17,6 +31,7 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <!--<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.compat.js"></script>-->
 <script src="lib/threejs-r65-custom.js"></script>
+<script src="lib/pointerevents.js"></script>
 <script src="mediacube.js"></script>
 
 
