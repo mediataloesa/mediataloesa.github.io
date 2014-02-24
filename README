@@ -31,6 +31,7 @@ To produce custom build three.js r65, do the following:
 	"src/core/Face3.js",
 	"src/core/Face4.js",
 	"src/core/Geometry.js",
+	"src/core/BufferGeometry.js",
 	"src/cameras/Camera.js",
 	"src/cameras/OrthographicCamera.js",
 	"src/cameras/PerspectiveCamera.js",
@@ -61,6 +62,7 @@ To produce custom build three.js r65, do the following:
 	"src/objects/Mesh.js",
 	"src/objects/Bone.js",
 	"src/objects/Sprite.js",
+	"src/objects/LOD.js",
 	"src/scenes/Scene.js",
 	"src/renderers/CanvasRenderer.js",
 	"src/renderers/renderables/RenderableVertex.js",
@@ -74,6 +76,7 @@ To produce custom build three.js r65, do the following:
 	"src/extras/FontUtils.js",
 	"src/extras/geometries/CubeGeometry.js"
 ]
+
 
 3. cd three.js/utils/build and run commands "python build.py --include canvas --minify --output threejs-r65-custom.min
 .js", and "python build.py --include canvas --output threejs-r65-custom.js", note that for these you need to have
