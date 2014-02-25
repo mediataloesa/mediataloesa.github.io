@@ -6,7 +6,6 @@ $(function(){
 	var $container = $('#mediacube');
 	if( !$container.length )
 		return;
-	var container = $container[0];
 
 	var textures;
 	//$.getJSON('http://www2.ess.fi/cube/ad.js',function(d){
@@ -23,7 +22,7 @@ $(function(){
 					t2.repeat.set(1,1);
 					t3.repeat.set(1,1);
 					t4.repeat.set(1,1);
-
+					t1.anisotropy = t2.anisotropy = t3.anisotropy = t4.anisotropy = 1;
 					textures = [t1,t2,t3,t4,t4,t3];
 					setTimeout(function(){
 						init();
@@ -40,7 +39,7 @@ $(function(){
 	var targetRotation = 0;
 	var targetRotationOnMouseDown = 0;
 	var mouseX = 0;
-	var mouseXOnMouseDown = 0,mouseYOnMouseDown = 0;
+	var pointers = {};
 	var w = 300, h = 300;
 
 	function init() {
@@ -68,14 +67,10 @@ $(function(){
 		scene.add( cube );
 
 		renderer = new THREE.CanvasRenderer();
-
-		// background color
-		renderer.setClearColor(0);
+		renderer.setClearColor(0); // background color
 		$container.append( renderer.domElement );
-		//$(renderer.domElement).css({"-ms-touch-action":"none"});
-		//_.each(textures,function(t) { t.anisotropy = renderer.getMaxAnisotropy();});
+		$(renderer.domElement).attr('touch-action',"none");
 		$(window).on('resize orientationchange',resize);
-
 		resize();
 	}
 
@@ -84,7 +79,9 @@ $(function(){
 		renderer.domElement.addEventListener('pointerdown', pointerdown);
 		renderer.domElement.addEventListener('pointermove', pointermove);
 		renderer.domElement.addEventListener('pointerup', pointerup);
-		//renderer.domElement.addEventListener('pointercancel', pointerup);
+		renderer.domElement.addEventListener('pointercancel', pointerup);
+		renderer.domElement.addEventListener('pointerout', pointerup);
+		renderer.domElement.addEventListener('pointerleave', pointerup);
 	}
 
 	function resize() {
@@ -101,34 +98,57 @@ $(function(){
 		renderer.setSize( w, h );
 	}
 
-	function pointerup(e) {
-		var mx = e.offsetX - 150
-			,my = e.offsetY - 150;
-		if( Math.sqrt(Math.pow(mouseXOnMouseDown-mx,2) +Math.pow(mouseYOnMouseDown-my,2)) < 2 ) {
-			var projector = new THREE.Projector();
+	// http://www.jacklmoore.com/notes/mouse-position/
+	// offsetX and Y are not standard, so calculate'em, x and y on canvas needed to raytrace to the cube face element
+	function offsetXY(e) {
+		e = e || window.event;
+		var target = e.target || e.srcElement,
+			rect = target.getBoundingClientRect(),
+			offsetX = e.clientX - rect.left,
+			offsetY = e.clientY - rect.top;
+		var a = [offsetX, offsetY];
+		console.log(a);
+		return a;
+	};
 
-			// calculate normalized device coordinates
-			mouseVector.x = (mx/150);
-			mouseVector.y = (my/150);
-			//console.log('touch detected at '+mouseVector.x+','+mouseVector.y);
-			var raycaster = projector.pickingRay( mouseVector.clone(), camera ),
-				a = raycaster.intersectObjects( scene.children );
-			if (a.length > 0) {
-				console.log(a[0].object.id + ', '+a[0].faceIndex+', '+a[0].face.materialIndex);
+	function pointerup(e) {
+		if( pointers[e.pointerId] ) {
+			var xy = offsetXY(e)
+				,mx = xy[0] - 150
+				,my = xy[1] - 150;
+
+			// use pythagoras to calculate how much pointer moved while it was down
+			if( Math.sqrt(Math.pow(pointers[e.pointerId][0]-mx,2) +Math.pow(pointers[e.pointerId][1]-my,2)) < 2 ) {
+				var projector = new THREE.Projector();
+
+				// calculate normalized device coordinates
+				mouseVector.x = (mx/150);
+				mouseVector.y = (my/150);
+				//console.log('touch detected at '+mouseVector.x+','+mouseVector.y);
+				var raycaster = projector.pickingRay( mouseVector.clone(), camera ),
+					a = raycaster.intersectObjects( scene.children );
+				if (a.length > 0) {
+					var linkIndex = a[0].face.materialIndex;
+					if( linkIndex >= 0 && linkIndex < cubeLinks.length)
+						window.open(cubeLinks[linkIndex]);
+					//console.log(a[0].object.id + ', '+a[0].faceIndex+', '+a[0].face.materialIndex);
+				}
 			}
+			delete pointers[e.pointerId];
 		}
 	}
 
-	function pointerdown( e ) {
-		e.preventDefault();
-		mouseXOnMouseDown = e.offsetX - 150;
-		mouseYOnMouseDown = e.offsetY - 150;
+	function pointerdown(e) {
+		var a = offsetXY(e);
+		if(e.pointerId)
+			pointers[e.pointerId] = [a[0]-150,a[1]-150];
 		targetRotationOnMouseDown = targetRotation;
 	}
-	function pointermove( e ) {
-		console.log(e.offsetX+','+e.offsetY);
-		mouseX = e.offsetX - 150;
-		targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.02;
+	function pointermove(e) {
+		if( !pointers[e.pointerId] )
+			return;
+		mouseX = offsetXY(e)[0] - 150;
+		targetRotation = targetRotationOnMouseDown + ( mouseX - pointers[e.pointerId][0] ) * 0.02;
 	}
 
 	function animate() {
