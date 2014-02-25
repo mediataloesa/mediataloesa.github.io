@@ -7,6 +7,20 @@ $(function(){
 	if( !$container.length )
 		return;
 
+	// save battery by letting browser decide when to draw
+	// shim layer with setTimeout fallback
+	// http://caniuse.com/#feat=requestanimationframe
+	window.requestAnimFrame = (function(){
+		return window.requestAnimationFrame		||
+			window.webkitRequestAnimationFrame	||
+			window.mozRequestAnimationFrame		||
+			window.oRequestAnimationFrame		||
+			window.msRequestAnimationFrame		||
+			function( callback ){
+				window.setTimeout(callback,25);
+			};
+	})();
+
 	var textures;
 	//$.getJSON('http://www2.ess.fi/cube/ad.js',function(d){
 	THREE.ImageUtils.loadTexture(cubeImages[0],undefined,function(t1){
@@ -152,11 +166,6 @@ $(function(){
 	}
 
 	function animate() {
-		requestAnimationFrame( animate );
-		render();
-	}
-
-	function render() {
 		if( roundTripDone )
 			cube.rotation.y += ( targetRotation - cube.rotation.y ) * 0.05;
 		else {
@@ -167,7 +176,9 @@ $(function(){
 				initEvents();
 			}
 		}
-		renderer.render( scene, camera );
+		renderer.render(scene,camera);
+		requestAnimFrame(animate);
 	}
+	requestAnimFrame(animate);
 });
 
