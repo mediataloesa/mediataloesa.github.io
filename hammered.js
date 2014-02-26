@@ -17,7 +17,7 @@ $(function(){
 			window.oRequestAnimationFrame		||
 			window.msRequestAnimationFrame		||
 			function( callback ){
-				window.setTimeout(callback,25);
+				window.setTimeout(callback,50);
 			};
 	})();
 
@@ -50,9 +50,6 @@ $(function(){
 	var camera, scene, renderer;
 	var cube;
 	var targetRotation = 0;
-	var targetRotationOnMouseDown = 0;
-	var mouseX = 0;
-	var pointers = {};
 	var w = 300, h = 300;
 
 	function init() {
@@ -81,8 +78,8 @@ $(function(){
 
 		renderer = new THREE.CanvasRenderer();
 		renderer.setClearColor(0); // background color
-		$container.append( renderer.domElement );
-		$(renderer.domElement).attr('touch-action',"none");
+		$container.append(renderer.domElement);
+		//$(renderer.domElement).attr('touch-action',"none");
 		$(window).on('resize orientationchange',resize);
 		resize();
 	}
@@ -105,51 +102,53 @@ $(function(){
 
 	// http://www.jacklmoore.com/notes/mouse-position/
 	// offsetX and Y are not standard, so calculate'em, x and y on canvas needed to raytrace to the cube face element
-	function offsetXY(e) {
-		e = e || window.event;
-		var target = e.target || e.srcElement,
+	function xy(e) {
+		var target = e.target,
 			rect = target.getBoundingClientRect(),
-			offsetX = e.clientX - rect.left,
-			offsetY = e.clientY - rect.top;
+			offsetX = e.gesture.center.pageX - rect.left,
+			offsetY = e.gesture.center.pageY - rect.top;
 		var a = [offsetX, offsetY];
 		console.log(a);
 		return a;
 	};
 
 	function handleHammer(e) {
-		console.log(e);
 		// disable browser scrolling
 		e.gesture.preventDefault();
 
 		switch(e.type) {
 			case 'dragright':
 			case 'dragleft':
-				mouseX = offsetXY(e)[0] - 150;
 				targetRotation += (e.gesture.deltaX  * 0.005);
 				break;
-
-			case 'swipeleft':
-				e.gesture.stopDetect();
-				break;
-
-			case 'swiperight':
-				e.gesture.stopDetect();
-				break;
-
-			case 'release':
-				//var projector = new THREE.Projector();
+			case 'tap':
+				var projector = new THREE.Projector(),
+					c = xy(e);
 				// calculate normalized device coordinates
-				//mouseVector.x = (mx/150);
-				//mouseVector.y = (my/150);
+				mouseVector.x = (c[0]-150)/150;
+				mouseVector.y = (c[1]-150)/150;
 				//console.log('touch detected at '+mouseVector.x+','+mouseVector.y);
-				/*var raycaster = projector.pickingRay( mouseVector.clone(), camera ),
+				var raycaster = projector.pickingRay( mouseVector.clone(), camera ),
 					a = raycaster.intersectObjects( scene.children );
 				if (a.length > 0) {
 					var linkIndex = a[0].face.materialIndex;
-					if( linkIndex >= 0 && linkIndex < cubeLinks.length)
-						window.open(cubeLinks[linkIndex]);
+					if( linkIndex >= 0 && linkIndex < cubeLinks.length) {
+						// http://stackoverflow.com/questions/6946162/window-open-mobile-devices-canvas-not-working
+						var options = "dialog=no,width=" + window.innerWidth + ",height=" + window.innerHeight;
+						window.open(cubeLinks[linkIndex],"_blank", options);
+					}
+					if( !$('#linkster').length ) {
+						$('body').append('<div id="linkster" style="position:absolute; top:20px; left:20px; color:black; background: white;">'+cubeLinks[linkIndex]+'</div>');
+					} else {
+						$('#linkster').text(cubeLinks[linkIndex]);
+					}
 					//console.log(a[0].object.id + ', '+a[0].faceIndex+', '+a[0].face.materialIndex);
-				}*/
+				}
+				if( !$('#xy').length ) {
+					$('body').append('<div id="xy" style="position:absolute; top:40px; left:40px; color:black; background: white;">'+parseInt(c[0])+','+parseInt(c[1])+'</div>');
+				} else {
+					$('#xy').text(parseInt(c[0])+','+parseInt(c[1]));
+				}
 				break;
 		}
 	}
@@ -157,7 +156,7 @@ $(function(){
 	var roundTripDone = false;
 	function initEvents() {
 		var hammertime = new Hammer(renderer.domElement, { drag_lock_to_axis: true });
-		hammertime.on("release dragleft dragright swipeleft swiperight", handleHammer);
+		hammertime.on("dragleft dragright tap", handleHammer);
 	}
 
 
