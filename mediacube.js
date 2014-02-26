@@ -22,7 +22,6 @@ $(function(){
 	})();
 
 	var textures;
-	//$.getJSON('http://www2.ess.fi/cube/ad.js',function(d){
 	THREE.ImageUtils.loadTexture(cubeImages[0],undefined,function(t1){
 		THREE.ImageUtils.loadTexture(cubeImages[1],undefined,function(t2){
 			THREE.ImageUtils.loadTexture(cubeImages[2],undefined,function(t3){
