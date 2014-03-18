@@ -344,7 +344,7 @@ $(function(){
 	if( !window.mediacube )
 		return;
 
-	var $container = $('#mediacube');
+	var $container = $(window.cubeContainer || '#mediacube');
 	if( !$container.length )
 		return;
 
@@ -413,7 +413,7 @@ $(function(){
 	var mouseVector = new THREE.Vector3();
 	var camera, scene, renderer;
 	var cube;
-	var targetRotation = 0;
+	var omega = 0;
 
 	function init() {
 
@@ -482,11 +482,18 @@ $(function(){
 		switch(e.type) {
 			case 'dragright':
 			case 'dragleft':
-				targetRotation += (e.gesture.deltaX  * 0.005);
-				if( targetRotation > 0.001 )
-					targetRotation = 0.001;
+				omega = 0;
+				console.log('drag:'+e.gesture.deltaX+","+e.gesture.velocityX);
+				var c = xy(e);
+				cube.rotation.y = cube.rotation.y - (cube.rotation.y % Math.PI/2) + Math.atan((c[0]-150)/400);
+				break;
+			case 'release':
+				console.log('release:'+e.gesture.deltaX+","+e.gesture.velocityX);
+				var vx = e.gesture.deltaX > 0 ? e.gesture.velocityX : -e.gesture.velocityX;
+				omega = vx/10;
 				break;
 			case 'tap':
+				console.log('tap:'+e.gesture.deltaX+","+e.gesture.velocityX);
 				var projector = new THREE.Projector(),
 					c = xy(e);
 				// calculate normalized device coordinates
@@ -521,17 +528,22 @@ $(function(){
 	var roundTripDone = false;
 	function initEvents() {
 		var hammertime = new Hammer(renderer.domElement, { drag_lock_to_axis: true });
-		hammertime.on("dragleft dragright tap", handleHammer);
+		hammertime.on("dragleft dragright release tap", handleHammer);
 	}
 
 	function animate() {
-		if( roundTripDone )
-			cube.rotation.y += ( targetRotation - cube.rotation.y ) * 0.05;
-		else {
+		if( roundTripDone ) {
+			cube.rotation.y += omega;
+			if( omega > 0 )
+				omega -= 0.001;
+			if( omega < 0 )
+				omega += 0.001;
+			if( Math.abs(omega) <= 0.001 )
+				omega = 0;
+		} else {
 			cube.rotation.y += 0.05;
 			if( cube.rotation.y >= (Math.PI*2) ) {
 				roundTripDone = true;
-				targetRotation = cube.rotation.y;
 				initEvents();
 			}
 		}
