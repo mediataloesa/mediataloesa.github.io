@@ -464,7 +464,7 @@ contentLoaded(window,function(){
 		scene.add( cube );
 
 		renderer = new THREE.CanvasRenderer();
-		renderer.setClearColor(0); // background color
+		renderer.setClearColor(0xffffff, 0); // background color
 		$container.append(renderer.domElement);
 		//$(renderer.domElement).attr('touch-action',"none");
 		$(window).on('resize orientationchange',resize);
