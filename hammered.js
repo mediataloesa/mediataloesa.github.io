@@ -498,6 +498,15 @@ contentLoaded(window,function(){
 		return a;
 	};
 
+	function openLink(url){
+		if( /android/i.test(ua.os.name) ) {
+			// http://stackoverflow.com/questions/6946162/window-open-mobile-devices-canvas-not-working
+			// var options = "dialog=no,width=" + window.innerWidth + ",height=" + window.innerHeight;
+			// window.open(cubeLinks[linkIndex],"_system"/*, options*/);
+			setTimeout(function(){ window.open(url); },500);
+		} else window.open(url);
+	}
+
 	var xybefore = null;
 	function handleHammer(e) {
 		// disable browser scrolling
@@ -538,22 +547,21 @@ contentLoaded(window,function(){
 				if (a.length > 0) {
 					var linkIndex = a[0].face.materialIndex;
 					if( linkIndex >= 0 && linkIndex < cubeLinks.length) {
-						// http://stackoverflow.com/questions/6946162/window-open-mobile-devices-canvas-not-working
-						var options = "dialog=no,width=" + window.innerWidth + ",height=" + window.innerHeight;
-						window.open(cubeLinks[linkIndex],"_blank", options);
+						openLink(cubeLinks[linkIndex]);
 					}
+					/*
 					if( !$('#linkster').length ) {
 						$('body').append('<div id="linkster" style="position:absolute; top:20px; left:20px; color:black; background: white;">'+cubeLinks[linkIndex]+'</div>');
 					} else {
 						$('#linkster').text(cubeLinks[linkIndex]);
-					}
+					}*/
 					//console.log(a[0].object.id + ', '+a[0].faceIndex+', '+a[0].face.materialIndex);
 				}
-				if( !$('#xy').length ) {
+				/*if( !$('#xy').length ) {
 					$('body').append('<div id="xy" style="position:absolute; top:40px; left:40px; color:black; background: white;">'+parseInt(c[0])+','+parseInt(c[1])+'</div>');
 				} else {
 					$('#xy').text(parseInt(c[0])+','+parseInt(c[1]));
-				}
+				}*/
 				break;
 		}
 	}
