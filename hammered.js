@@ -378,7 +378,7 @@ contentLoaded(window,function(){
 	//if( !window.mediacube )
 	//	return;
 
-	var $container = $(window.cubeContainer || '#mediacube');
+	var $container = $(window.cubeContainer ? '#'+window.cubeContainer : '#mediacube');
 	if( !$container.length )
 		return;
 
@@ -464,7 +464,7 @@ contentLoaded(window,function(){
 		scene.add( cube );
 
 		renderer = new THREE.CanvasRenderer();
-		renderer.setClearColor(0); // background color
+		renderer.setClearColor(0xffffff, 0); // background color
 		$container.append(renderer.domElement);
 		//$(renderer.domElement).attr('touch-action',"none");
 		$(window).on('resize orientationchange',resize);
