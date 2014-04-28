@@ -378,7 +378,7 @@ contentLoaded(window,function(){
 	//if( !window.mediacube )
 	//	return;
 
-	var $container = $(window.cubeContainer || '#mediacube');
+	var $container = $(window.cubeContainer ? '#'+window.cubeContainer : '#mediacube');
 	if( !$container.length )
 		return;
 
