@@ -382,8 +382,9 @@ contentLoaded(window,function(){
 	if( (/windows phone/i.test(ua.os.name) && ua.os.version == "7.5")
 		|| (/android/i.test(ua.os.name) && (/^2\.3/.test(ua.os.version || /^3\./.test(ua.os.version))) )
 		|| (/symbian/i.test(ua.os.name) ) ) {
-		// fallback to swipe carousel
-		$container.text('android 2.3.x or 3.x or wp7.x');
+		performanceProfile.textureMappingQuality = 2;
+		// or fallback to swipe carousel, or just return and do nothing
+		//$container.text('android 2.3.x or 3.x or wp7.x');
 	}
 
 	// if older iphone or ipad reduce quality to get decent rendering
