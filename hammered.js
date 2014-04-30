@@ -501,7 +501,7 @@ contentLoaded(window,function(){
 			// http://stackoverflow.com/questions/6946162/window-open-mobile-devices-canvas-not-working
 			// var options = "dialog=no,width=" + window.innerWidth + ",height=" + window.innerHeight;
 			// window.open(cubeLinks[linkIndex],"_system"/*, options*/);
-			setTimeout(function(){ window.open(url); },500);
+			setTimeout(function(){ window.open(url); },1);
 		} else window.open(url);
 	}
 
