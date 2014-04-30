@@ -448,12 +448,12 @@ contentLoaded(window,function(){
 
 		// overdraw needed here otherwise seams are drawn on top of textures
 		var materials = [
-			new THREE.MeshBasicMaterial({overdraw:1,wireframe:false,ambient:0xffffff,map:textures[0]}),
-			new THREE.MeshBasicMaterial({overdraw:1,wireframe:false,ambient:0xffffff,map:textures[1]}),
-			new THREE.MeshBasicMaterial({overdraw:1,wireframe:true}),
-			new THREE.MeshBasicMaterial({overdraw:1,wireframe:true}),
-			new THREE.MeshBasicMaterial({overdraw:1,wireframe:false,ambient:0xffffff,map:textures[4]}),
-			new THREE.MeshBasicMaterial({overdraw:1,wireframe:false,ambient:0xffffff,map:textures[5]})
+			new THREE.MeshBasicMaterial({overdraw:0.5,wireframe:false,ambient:0xffffff,map:textures[0]}),
+			new THREE.MeshBasicMaterial({overdraw:0.5,wireframe:false,ambient:0xffffff,map:textures[1]}),
+			new THREE.MeshBasicMaterial({overdraw:0.5,wireframe:true}),
+			new THREE.MeshBasicMaterial({overdraw:0.5,wireframe:true}),
+			new THREE.MeshBasicMaterial({overdraw:0.5,wireframe:false,ambient:0xffffff,map:textures[4]}),
+			new THREE.MeshBasicMaterial({overdraw:0.5,wireframe:false,ambient:0xffffff,map:textures[5]})
 		];
 
 		// segments affect how well texture is mapped but affects the performace considerably
@@ -535,7 +535,6 @@ contentLoaded(window,function(){
 				omega = vx/10;
 				break;*/
 			case 'tap':
-				console.log('tap:'+e.gesture.deltaX+","+e.gesture.velocityX);
 				var projector = new THREE.Projector(),
 					c = xy(e);
 				// calculate normalized device coordinates
@@ -546,6 +545,8 @@ contentLoaded(window,function(){
 					a = raycaster.intersectObjects( scene.children );
 				if (a.length > 0) {
 					var linkIndex = a[0].face.materialIndex;
+					if( linkIndex == 5 ) linkIndex = 2;
+					if( linkIndex == 4 ) linkIndex = 3;
 					if( linkIndex >= 0 && linkIndex < cubeLinks.length) {
 						openLink(cubeLinks[linkIndex]);
 					}
