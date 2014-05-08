@@ -472,12 +472,17 @@ contentLoaded(window,function(){
 	function resize() {
 		var cw = $container.width(),ch = $container.height();
 		var w = performanceProfile.canvasWidth, h = performanceProfile.canvasWidth;
-		if( cw < performanceProfile.canvasWidth ) {
-			w = h = cw;
+		if( ch < h ) {
+			$container.height(h);
+			ch = h;
+		}
+		if( cw < w ) {
+			$container.width(h);
+			cw = w;
 		}
 		$container.find('canvas').css({
 			"margin-top" : (parseInt(ch - h)/2) + "px",
-			"margin-left" : (parseInt(cw - h)/2) + "px"
+			"margin-left" : (parseInt(cw - w)/2) + "px"
 		});
 		camera.aspect = 1;
 		camera.updateProjectionMatrix();
