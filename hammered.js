@@ -480,10 +480,7 @@ contentLoaded(window,function(){
 			$container.width(h);
 			cw = w;
 		}
-		$container.find('canvas').css({
-			"margin-top" : (parseInt(ch - h)/2) + "px",
-			"margin-left" : (parseInt(cw - w)/2) + "px"
-		});
+		$container.find('canvas').css({'display':'block',"margin" : "0 auto"});
 		camera.aspect = 1;
 		camera.updateProjectionMatrix();
 		renderer.setSize( w, h );
