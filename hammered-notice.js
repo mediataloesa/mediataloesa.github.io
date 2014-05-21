@@ -465,6 +465,21 @@ contentLoaded(window,function(){
 		renderer.setClearColor(0xfffffe); // background color
 		$container.append(renderer.domElement);
 		$("#"+cubeContainer).append("<div class='cubeOverlay'><\/div>");
+		$container.css({'width':'300px',
+						'height':'300px',
+						'z-index':'0',
+						'position':'relative',
+						'margin':'0 auto'});
+		$("#"+cubeContainer+" .cubeOverlay").css({
+											"z-index": "100",
+											"position":"absolute",
+											"top":"0",
+											"left":"0",
+											"width":"300px",
+											"height":"300px",
+											"background":"url('http://www.ess.fi/js/mediacube/cube-overlay.png') top left no-repeat",
+											"pointer-events":"none"
+											});
 		//$(renderer.domElement).attr('touch-action',"none");
 		$(window).on('resize orientationchange',resize);
 		resize();
@@ -481,7 +496,8 @@ contentLoaded(window,function(){
 			$container.width(h);
 			cw = w;
 		}
-		$container.find('canvas').css({'display':'block',"margin" : "0 auto"});
+		$container.find('canvas').css({
+		'display':'block',"margin" : "0 auto"});
 		camera.aspect = 1;
 		camera.updateProjectionMatrix();
 		renderer.setSize( w, h );
