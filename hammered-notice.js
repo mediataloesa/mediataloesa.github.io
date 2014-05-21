@@ -464,12 +464,19 @@ contentLoaded(window,function(){
 		renderer = new THREE.CanvasRenderer();
 		renderer.setClearColor(0xfffffe); // background color
 		$container.append(renderer.domElement);
-		$("#"+cubeContainer).append("<div class='cubeOverlay'><\/div>");
 		$container.css({'width':'300px',
 						'height':'300px',
 						'z-index':'0',
 						'position':'relative',
 						'margin':'0 auto'});
+		var msie = ua.ua.indexOf('MSIE');
+		if (msie > 0) {
+			$("#"+cubeContainer).append("<svg class='cubeOverlay' width='300' height='300' pointer-events='none'\
+											xmlns='http://www.w3.org/2000/svg'\
+											xmlns:xlink='http://www.w3.org/1999/xlink'>\
+											<image x='0' y='0' width='300' height='300'\
+											xlink:href='pyyhkaise.svg' />\
+											</svg>");
 		$("#"+cubeContainer+" .cubeOverlay").css({
 											"z-index": "100",
 											"position":"absolute",
@@ -477,10 +484,24 @@ contentLoaded(window,function(){
 											"left":"0",
 											"width":"300px",
 											"height":"300px",
-											"background":"url('http://www.ess.fi/js/mediacube/cube-overlay.png') top left no-repeat",
 											"pointer-events":"none"
 											});
-		//$(renderer.domElement).attr('touch-action',"none");
+		}
+		else {
+			$("#"+cubeContainer).append("<div class='cubeOverlay'><\/div>");
+			$("#"+cubeContainer+" .cubeOverlay").css({
+											"z-index": "100",
+											"position":"absolute",
+											"top":"0",
+											"left":"0",
+											"width":"300px",
+											"height":"300px",
+											"background":"url('http://www.ess.fi/js/mediacube/cube-overlay.png') top left no-repeat",
+											"pointer-events":"none",
+											"-ms-touch-action":"none"
+											});
+		}
+		//$("#"+cubeContainer+" .cubeOverlay").attr('touch-action',"none");
 		$(window).on('resize orientationchange',resize);
 		resize();
 	}
@@ -587,6 +608,7 @@ contentLoaded(window,function(){
 	var roundTripDone = false;
 	function initEvents() {
 		var hammertime = new Hammer(renderer.domElement, { drag_lock_to_axis: true });
+		/*
 		var msie = ua.ua.indexOf('MSIE');
 		if (msie > 0) {
 			$("#"+cubeContainer).on("click",".cubeOverlay", function () {
@@ -594,10 +616,11 @@ contentLoaded(window,function(){
 			});
 		}
 		else {
-			hammertime.on("dragleft dragright", function () {
-				$("#"+cubeContainer+" .cubeOverlay").hide();		
-			});
 		}
+		*/
+		hammertime.on("dragleft dragright", function () {
+			$("#"+cubeContainer+" .cubeOverlay").hide();		
+		});
 		hammertime.on("dragleft dragright tap", handleHammer );
 	}
 
