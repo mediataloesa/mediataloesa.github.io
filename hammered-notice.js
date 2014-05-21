@@ -475,7 +475,7 @@ contentLoaded(window,function(){
 											xmlns='http://www.w3.org/2000/svg'\
 											xmlns:xlink='http://www.w3.org/1999/xlink'>\
 											<image x='0' y='0' width='300' height='300'\
-											xlink:href='pyyhkaise.svg' />\
+											xlink:href='http://www.ess.fi/js/mediacube/pyyhkaise.svg' />\
 											</svg>");
 		$("#"+cubeContainer+" .cubeOverlay").css({
 											"z-index": "100",
