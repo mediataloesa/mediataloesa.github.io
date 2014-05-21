@@ -2,17 +2,23 @@
 <html>
 <head>
 <title>Mediacube</title>
+<meta name="viewport" content="width=device-width, user-scalable=no">
 </head>
 <body id="mediacube">
 <!-- "Mediacube" (section "Development") -->
 <script type="text/javascript" src="http://eas3.emediate.se/eas?cu=12044;cre=mu;js=y;pageviewid=;target=_blank"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script>
+
 console.log("cubeContainer: "+cubeContainer);
 console.log("cubeImages: ");
 console.log(cubeImages);
 console.log("cubeLinks: ");
 console.log(cubeLinks);
+
+$(document).load(function (){
+$(cubeContainer + " canvas").append("<div class='cubeOverlay'><\/div>");
+});
 </script>
 </body>
 </html>
